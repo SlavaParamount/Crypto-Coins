@@ -13,9 +13,10 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <div class="container">
         <div class="row">
-            <div class="col-6 mx-auto mt-5">
+            <div class="col-8 mx-auto mt-5">
                 <h3 class="mb-5">Cryptocurrencies</h3>
-                {% for coin in coins %}
+                {% verbatim %}
+               <div id="app">
                     <table class="table table-hover">
                         <head>
                             <tr>
@@ -25,21 +26,48 @@
                             </tr>
                         </head>
                         <tbody>
-                            {% for coin in coins %}
-                                <tr>
-                                    <td class="align-middle">{{ coin.market_cap_rank }}</td>
+                                <tr v-for="coin in coins" :key="coin.id">
+                                    <td class="align-middle">{{ coinrank }}</td>
                                     <td class="align-middle">
-                                        <img src="{{ coin.image }}" class="px-2" >
+                                        <img :src="coin.image" class="px-2" width="50">
+                                        {{ coin.name }}
                                         <small class="text-muted px-2">{{ coin.symbol }}</small>
                                     </td>
-                                    <td class="align-middle">{{ coin.current_price }}</td>
+                                    <td class="align-middle">{{ coin.price }}</td>
                                 </tr>
-                            {% endfor %}
                         </tbody>
                     </table>
-                {% endfor %}
+                </div>
+                {% endverbatim %}
             </div>
         </div>
     </div>
+
+<script>
+    const{ createApp } = Vue;
+
+    const CoinsApp = {
+        data(){
+            return {
+                
+                coin: 'just a coin',
+                coins: null
+            }
+        },
+        created(){
+            const socket = new WebSocket(`ws://${window.location.host}/ws/coins/`);
+
+            let _this = this;
+
+            socket.onmessage = function(event){
+                _this.coins = JSON.parse(event.data);
+                console.log(_this.coins);
+
+            }
+        }
+    }
+
+    createApp(CoinsApp).mount('#app')
+</script>
 </body>
 </html>

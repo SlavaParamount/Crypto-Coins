@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'coins',
 ]
 
@@ -71,7 +72,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'cmc_project.wsgi.application'
+ASGI_APPLICATION = 'cmc_project.asgi.application'
 
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
+FORKED_BY_MULTIPROCESSING = 1
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -83,6 +88,14 @@ DATABASES = {
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)]
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
